@@ -46,3 +46,33 @@ func TestWorkersMemoryAvg(t *testing.T) {
 		t.Errorf("workersMemoryAvg: expected %s but got %s", expectedMemory, m)
 	}
 }
+
+type TestWorkersMemoryMaxPipedCommands struct{}
+
+func (r TestWorkersMemoryMaxPipedCommands) Output(commands ...[]string) ([]byte, error) {
+	return []byte("4194304\n"), nil
+}
+
+func TestWorkersMemoryMax(t *testing.T) {
+	pipedCommands = TestWorkersMemoryMaxPipedCommands{}
+	expectedMemory := "4194304"
+	m, _ := workersMemoryMax()
+	if m != expectedMemory {
+		t.Errorf("workersMemoryMax: expected %s but got %s", expectedMemory, m)
+	}
+}
+
+type TestWorkersMemoryMinPipedCommands struct{}
+
+func (r TestWorkersMemoryMinPipedCommands) Output(commands ...[]string) ([]byte, error) {
+	return []byte("2097152\n"), nil
+}
+
+func TestWorkersMemoryMin(t *testing.T) {
+	pipedCommands = TestWorkersMemoryMinPipedCommands{}
+	expectedMemory := "2097152"
+	m, _ := workersMemoryMin()
+	if m != expectedMemory {
+		t.Errorf("workersMemoryMin: expected %s but got %s", expectedMemory, m)
+	}
+}

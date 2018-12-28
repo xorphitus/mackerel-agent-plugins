@@ -53,6 +53,18 @@ func (u UnicornPlugin) FetchMetrics() (map[string]interface{}, error) {
 	}
 	stat["memory_workeravg"] = averageM
 
+	maxM, err := workersMemoryMax()
+	if err != nil {
+		return stat, err
+	}
+	stat["memory_workermax"] = maxM
+
+	minM, err := workersMemoryMin()
+	if err != nil {
+		return stat, err
+	}
+	stat["memory_workermin"] = minM
+
 	return stat, nil
 }
 
@@ -74,7 +86,15 @@ func (u UnicornPlugin) GraphDefinition() map[string]mp.Graphs {
 			Metrics: []mp.Metrics{
 				{Name: "memory_workers", Label: "Workers", Diff: false, Stacked: true},
 				{Name: "memory_master", Label: "Master", Diff: false, Stacked: true},
+			},
+		},
+		"memory_statistics": {
+			Label: (labelPrefix + " Memory statistics"),
+			Unit:  "bytes",
+			Metrics: []mp.Metrics{
 				{Name: "memory_workeravg", Label: "Worker Average", Diff: false, Stacked: false},
+				{Name: "memory_workermax", Label: "Worker Max", Diff: false, Stacked: false},
+				{Name: "memory_workermin", Label: "Worker Min", Diff: false, Stacked: false},
 			},
 		},
 		"workers": {
